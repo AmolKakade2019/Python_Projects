@@ -1,0 +1,7 @@
+# rust installation is needed before hand.
+langchain
+wikipedia
+langchain-community
+langchain-ollama
+python-dotenv
+pydantic
