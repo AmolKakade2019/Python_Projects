@@ -1,9 +1,11 @@
 # rust installation is needed before hand.
 # docker installation is needed if github mcp server is to be used in VSCode
+# important: use python 3.10 or above but below 3.14, as langchain is not compatible with 3.14 yet.
 # pip install -r requirements.txt 
 langchain
 wikipedia
 langchain-community
 langchain-ollama
+ddgs
 python-dotenv
 pydantic

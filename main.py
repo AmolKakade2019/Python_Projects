@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplat
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain.tools import tool  # tool decorator for defining functions as LangChain tools
-from datetime import datetime
+from tools import get_current_time, WriteToFile, duckSearch, wikiSearchTool  # Importing user-defined tools
 import json
 
 llm            = None
@@ -40,29 +40,15 @@ def initialize():
     # No additional initialization needed here
     pass
 
-# ---------------------------------------------------------------------------
-# Example tool definitions that can be used by the agent
-# ---------------------------------------------------------------------------
-
-@tool
-def get_current_time() -> str:
-    """Return the current UTC time as an ISO‑8601 string."""
-    return datetime.utcnow().isoformat()
-
-@tool
-def echo(text: str) -> str:
-    """Echo the provided text back unchanged."""
-    return text
-
 def main():
     response = "Query not sent!"
     global agent_executor, agent, prompt, parser, llm
     initialize()
     # Register the example tools with the agent
-    tool_list = [get_current_time, echo]
+    tool_list = [get_current_time, WriteToFile, duckSearch, wikiSearchTool]
     agent = create_tool_calling_agent(llm, tools=tool_list, prompt=prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tool_list, verbose=True)
-    question = "is there active conflict between Afghanistan and Pakistan as of today? Provide sources for your answer and save answer to a new file named 'Answer.txt' and tell path of this file."
+    question = "Who is chancellor of Germany? Provide sources for your answer and save it to a new file named 'Answer.txt' along with sources and tools used and tell path of this file."
     response = agent_executor.invoke({"question": question})
     structured_response = parser.parse(response.get("output"))
     dict_response = json.loads(response.get("output"))
