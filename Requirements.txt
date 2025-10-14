@@ -1,4 +1,6 @@
 # rust installation is needed before hand.
+# docker installation is needed if github mcp server is to be used in VSCode
+# pip install -r requirements.txt 
 langchain
 wikipedia
 langchain-community
