@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplat
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain.tools import tool  # tool decorator for defining functions as LangChain tools
-from tools import get_current_time, WriteToFile, duckSearch, wikiSearchTool  # Importing user-defined tools
+from tools import get_current_time, WriteToFile, AppendToFile, duckSearch, wikiSearchTool  # Importing user-defined tools
 import json
 
 llm            = None
@@ -45,17 +45,26 @@ def main():
     global agent_executor, agent, prompt, parser, llm
     initialize()
     # Register the example tools with the agent
-    tool_list = [get_current_time, WriteToFile, duckSearch, wikiSearchTool]
+    tool_list = [get_current_time, WriteToFile, AppendToFile, duckSearch, wikiSearchTool]
     agent = create_tool_calling_agent(llm, tools=tool_list, prompt=prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tool_list, verbose=True)
-    question = "Who is chancellor of Germany? Provide sources for your answer and save it to a new file named 'Answer.txt' along with sources and tools used and tell path of this file."
-    response = agent_executor.invoke({"question": question})
-    structured_response = parser.parse(response.get("output"))
-    dict_response = json.loads(response.get("output"))
-    print("Structured response:", structured_response)
-    print("Dictionary response:")
-    for item in dict_response.items():
-        print(f"{item[0]}: {item[1]}\n")
+    question = "Who is chancellor of Germany? "
+    additional_instructions = """Provide sources for your answer 
+    and append the question and answer to a file named 'Answer.txt' along with sources and tools used on a new line,
+      without deleting previous contents of this file, and tell path of this file."""
+    while(question.lower() != "exit"):
+        response = agent_executor.invoke({"question": question+ additional_instructions})
+        structured_response = parser.parse(response.get("output"))
+        dict_response = json.loads(response.get("output"))
+        #print("Structured response:", structured_response)
+        print("Dictionary response:")
+        for item in dict_response.items():
+            print(f"{item[0]}: {item[1]}\n")
+        question = input("Enter your question (or type 'exit' to quit): ")
+        if question.lower() == "exit":
+            print("Exiting the program.")
+            break
+    
 
 if __name__ == "__main__":
     main()

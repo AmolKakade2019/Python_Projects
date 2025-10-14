@@ -30,6 +30,17 @@ def WriteToFile(text: str) -> str:
     
     current_dir = os.getcwd()  # Ensure the current working directory is correct
     file_path = f"{current_dir}\\Answer.txt"
-    with open(file_path, "w") as f:
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(text)
+    return file_path
+
+
+@tool
+def AppendToFile(text: str) -> str:
+    """Append the provided text to a file by retaining file contents and return the file path."""
+
+    current_dir = os.getcwd()  # Ensure the current working directory is correct
+    file_path = f"{current_dir}\\Answer.txt"
+    with open(file_path, "a", encoding="utf-8") as f:
         f.write(text)
     return file_path
